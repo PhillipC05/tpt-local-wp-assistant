@@ -1,0 +1,76 @@
+{
+  "name": "tpt-local-wp-assistant",
+  "version": "1.0.0",
+  "description": "Automated WordPress plugin development environment with hot reload",
+  "main": "electron-main.js",
+  "bin": {
+    "tpt-wp-dev": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "gui": "electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "setup": "node setup.js",
+    "postinstall": "node setup.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3",
+    "browser-sync": "^3.0.2",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "path": "^0.12.7",
+    "child_process": "^1.0.2",
+    "typescript": "^5.3.3",
+    "adm-zip": "^0.5.10"
+  },
+  "devDependencies": {
+    "electron": "^35.7.5",
+    "electron-builder": "^25.1.8"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "author": "TPT",
+  "license": "MIT",
+  "build": {
+    "appId": "com.tpt.wpassistant",
+    "productName": "TPT Local WP Assistant",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**/*",
+      "!build/**/*",
+      "!*.md",
+      "!setup.js"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TPT Local WP Assistant"
+    }
+  }
+}

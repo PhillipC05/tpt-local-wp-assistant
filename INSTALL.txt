@@ -1,0 +1,71 @@
+=======================================
+ TPT Local WP Assistant
+=======================================
+
+Thank you for downloading TPT Local WP Assistant!
+
+This is a one-click WordPress plugin development environment
+with hot reload functionality.
+
+=======================================
+ QUICK START (Windows)
+=======================================
+
+1. Make sure you have Node.js installed:
+   https://nodejs.org/
+
+2. Double-click "install.bat" or run "install.ps1"
+
+3. Wait for installation to complete
+
+4. Use the desktop shortcut that gets created!
+
+That's it! Your WordPress development environment is ready.
+
+=======================================
+ WHAT YOU GET
+=======================================
+
+✓ Beautiful GUI application
+✓ Hot reload for PHP, JS, CSS, TypeScript
+✓ SQLite database (no MySQL setup)
+✓ Automatic WordPress installation
+✓ BrowserSync for live reloading
+✓ TypeScript auto-compilation
+✓ Desktop shortcuts created automatically
+
+=======================================
+ USING THE APPLICATION
+=======================================
+
+1. Click "Browse Folder" to select your plugin
+2. Or click "Use Example" to try the demo plugin
+3. Click "Start Development"
+4. Open your browser to http://localhost:3000
+
+Edit your plugin files and see changes instantly!
+
+=======================================
+ CLI MODE (Advanced)
+=======================================
+
+If you prefer command line:
+
+npm run gui          # Start GUI
+npx tpt-wp-dev start /path/to/plugin  # CLI mode
+
+=======================================
+ SUPPORT
+=======================================
+
+For issues or questions:
+- Check the README.md file
+- Visit: https://github.com/your-repo
+
+=======================================
+ LICENSE
+=======================================
+
+MIT License - Free to use and modify!
+
+Enjoy coding! 🚀

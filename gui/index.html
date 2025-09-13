@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPT Local WP Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .folder-selector {
+            margin-bottom: 20px;
+        }
+
+        .folder-path {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.active {
+            background: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .status-indicator.inactive {
+            background: #ccc;
+        }
+
+        .log-area {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .dependency-check {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .dependency-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+
+        .dependency-item.success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .dependency-item.error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .dependency-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .dependency-text {
+            flex: 1;
+        }
+
+        .dependency-text strong {
+            display: block;
+        }
+
+        .dependency-text small {
+            color: #6c757d;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            transition: background 0.3s ease;
+        }
+
+        .links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 TPT Local WP Assistant</h1>
+            <p>Automated WordPress plugin development with hot reload</p>
+        </div>
+
+        <div id="dependencyAlert" class="alert alert-info hidden">
+            Checking system dependencies...
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: #333;">System Dependencies</h2>
+            <div id="dependencyCheck" class="dependency-check">
+                <div class="dependency-item" id="nodeCheck">
+                    <span class="dependency-icon">📦</span>
+                    <div class="dependency-text">
+                        <strong>Node.js</strong>
+                        <small id="nodeStatus">Checking...</small>
+                    </div>
+                </div>
+                <div class="dependency-item" id="phpCheck">
+                    <span class="dependency-icon">🐘</span>
+                    <div class="dependency-text">
+                        <strong>PHP</strong>
+                        <small id="phpStatus">Checking...</small>
+                    </div>
+                </div>
+                <div class="dependency-item" id="wpCliCheck">
+                    <span class="dependency-icon">🛠️</span>
+                    <div class="dependency-text">
+                        <strong>WP-CLI</strong>
+                        <small id="wpCliStatus">Checking...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: #333;">Plugin Development</h2>
+
+            <div class="folder-selector">
+                <label for="pluginPath" style="display: block; margin-bottom: 8px; font-weight: 600;">Plugin Folder:</label>
+                <input type="text" id="pluginPath" class="folder-path" placeholder="Select your WordPress plugin folder..." readonly>
+                <div class="button-group" style="margin-top: 10px;">
+                    <button id="selectFolderBtn" class="btn btn-primary">📁 Browse Folder</button>
+                    <button id="useExampleBtn" class="btn btn-secondary">🎯 Use Example</button>
+                </div>
+            </div>
+
+            <div id="controlButtons" class="button-group" style="margin-top: 20px;">
+                <button id="startBtn" class="btn btn-success" disabled>
+                    <span class="status-indicator inactive"></span>
+                    Start Development
+                </button>
+                <button id="stopBtn" class="btn btn-danger" disabled>
+                    <span class="status-indicator inactive"></span>
+                    Stop Development
+                </button>
+                <button id="openBrowserBtn" class="btn btn-primary" disabled>🌐 Open Browser</button>
+            </div>
+        </div>
+
+        <div class="card status-card">
+            <h2 style="margin-bottom: 20px;">📊 Status & Logs</h2>
+            <div id="statusMessage" style="margin-bottom: 15px; font-size: 16px;">
+                Ready to start development environment
+            </div>
+            <div id="logArea" class="log-area">
+                Welcome to TPT Local WP Assistant GUI!<br>
+                Select a plugin folder and click "Start Development" to begin.<br><br>
+                <strong>Features:</strong><br>
+                • Hot reload for PHP, JS, CSS, and TypeScript files<br>
+                • SQLite database (no MySQL setup required)<br>
+                • Automatic WordPress installation<br>
+                • BrowserSync for instant browser updates<br>
+            </div>
+        </div>
+
+        <div class="links">
+            <a href="#" onclick="openExternal('https://wordpress.org')">📚 WordPress Docs</a>
+            <a href="#" onclick="openExternal('https://developer.wordpress.org')">🛠️ Developer Resources</a>
+            <a href="#" onclick="openExternal('https://wp-cli.org')">⚡ WP-CLI</a>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        // DOM elements
+        const pluginPathInput = document.getElementById('pluginPath');
+        const selectFolderBtn = document.getElementById('selectFolderBtn');
+        const useExampleBtn = document.getElementById('useExampleBtn');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const openBrowserBtn = document.getElementById('openBrowserBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const logArea = document.getElementById('logArea');
+        const dependencyAlert = document.getElementById('dependencyAlert');
+
+        let isDevelopmentRunning = false;
+        let selectedPluginPath = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkDependencies();
+        });
+
+        // Event listeners
+        selectFolderBtn.addEventListener('click', selectPluginFolder);
+        useExampleBtn.addEventListener('click', useExamplePlugin);
+        startBtn.addEventListener('click', startDevelopment);
+        stopBtn.addEventListener('click', stopDevelopment);
+        openBrowserBtn.addEventListener('click', openBrowser);
+
+        // Menu event listeners
+        ipcRenderer.on('menu-select-folder', selectPluginFolder);
+        ipcRenderer.on('menu-start-dev', () => {
+            if (selectedPluginPath) startDevelopment();
+        });
+        ipcRenderer.on('menu-stop-dev', stopDevelopment);
+
+        // Log message listener
+        ipcRenderer.on('log-message', (event, message) => {
+            addLog(message);
+        });
+
+        async function checkDependencies() {
+            try {
+                dependencyAlert.classList.remove('hidden');
+                dependencyAlert.textContent = 'Checking system dependencies...';
+                dependencyAlert.className = 'alert alert-info';
+
+                const results = await ipcRenderer.invoke('check-dependencies');
+
+                updateDependencyStatus('nodeCheck', results.node, 'Node.js', results.node ? 'Installed' : 'Not found');
+                updateDependencyStatus('phpCheck', results.php, 'PHP', results.php ? 'Installed' : 'Not found (required)');
+                updateDependencyStatus('wpCliCheck', results.wpCli, 'WP-CLI', results.wpCli ? 'Installed' : 'Will be downloaded automatically');
+
+                dependencyAlert.classList.add('hidden');
+
+                // Enable start button if PHP is available
+                if (results.php) {
+                    startBtn.disabled = false;
+                } else {
+                    addLog('❌ PHP is required but not found. Please install PHP 7.4+ and restart the application.', 'error');
+                }
+
+            } catch (error) {
+                dependencyAlert.className = 'alert alert-danger';
+                dependencyAlert.textContent = 'Failed to check dependencies: ' + error.message;
+            }
+        }
+
+        function updateDependencyStatus(elementId, success, name, status) {
+            const element = document.getElementById(elementId);
+            element.className = `dependency-item ${success ? 'success' : 'error'}`;
+            document.getElementById(`${elementId.replace('Check', '')}Status`).textContent = status;
+        }
+
+        async function selectPluginFolder() {
+            try {
+                const folderPath = await ipcRenderer.invoke('select-plugin-folder');
+                if (folderPath) {
+                    selectedPluginPath = folderPath;
+                    pluginPathInput.value = folderPath;
+                    addLog(`📁 Selected plugin folder: ${folderPath}`);
+                    updateStatus('Plugin folder selected. Ready to start development.');
+                }
+            } catch (error) {
+                addLog('❌ Error selecting folder: ' + error.message, 'error');
+            }
+        }
+
+        function useExamplePlugin() {
+            const examplePath = require('path').join(__dirname, '..', 'example-plugin');
+            selectedPluginPath = examplePath;
+            pluginPathInput.value = examplePath;
+            addLog(`🎯 Using example plugin: ${examplePath}`);
+            updateStatus('Example plugin selected. Ready to start development.');
+        }
+
+        async function startDevelopment() {
+            if (!selectedPluginPath) {
+                addLog('❌ Please select a plugin folder first.', 'error');
+                return;
+            }
+
+            try {
+                updateStatus('🚀 Starting development environment...');
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<div class="loading"></div>Starting...';
+
+                const result = await ipcRenderer.invoke('start-development', selectedPluginPath);
+
+                if (result.success) {
+                    isDevelopmentRunning = true;
+                    updateStatus('✅ Development environment started successfully!');
+                    addLog(result.message, 'success');
+                    updateButtons();
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                updateStatus('❌ Failed to start development environment');
+                addLog('❌ Error: ' + error.message, 'error');
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<span class="status-indicator inactive"></span>Start Development';
+            }
+        }
+
+        async function stopDevelopment() {
+            try {
+                updateStatus('🛑 Stopping development environment...');
+                stopBtn.disabled = true;
+                stopBtn.innerHTML = '<div class="loading"></div>Stopping...';
+
+                const result = await ipcRenderer.invoke('stop-development');
+
+                if (result.success) {
+                    isDevelopmentRunning = false;
+                    updateStatus('✅ Development environment stopped.');
+                    addLog(result.message, 'success');
+                    updateButtons();
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                updateStatus('❌ Failed to stop development environment');
+                addLog('❌ Error: ' + error.message, 'error');
+                stopBtn.disabled = false;
+                stopBtn.innerHTML = '<span class="status-indicator inactive"></span>Stop Development';
+            }
+        }
+
+        function openBrowser() {
+            if (isDevelopmentRunning) {
+                require('electron').shell.openExternal('http://localhost:3000');
+            }
+        }
+
+        function updateButtons() {
+            if (isDevelopmentRunning) {
+                startBtn.innerHTML = '<span class="status-indicator active"></span>Development Running';
+                startBtn.disabled = true;
+                stopBtn.innerHTML = '<span class="status-indicator inactive"></span>Stop Development';
+                stopBtn.disabled = false;
+                openBrowserBtn.disabled = false;
+            } else {
+                startBtn.innerHTML = '<span class="status-indicator inactive"></span>Start Development';
+                startBtn.disabled = false;
+                stopBtn.innerHTML = '<span class="status-indicator inactive"></span>Stop Development';
+                stopBtn.disabled = true;
+                openBrowserBtn.disabled = true;
+            }
+        }
+
+        function updateStatus(message) {
+            statusMessage.textContent = message;
+        }
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logArea.textContent += logEntry;
+            logArea.scrollTop = logArea.scrollHeight;
+
+            // Add color coding for different message types
+            const lines = logArea.textContent.split('\n');
+            let coloredContent = '';
+            lines.forEach(line => {
+                if (line.includes('❌') || type === 'error') {
+                    coloredContent += `<span style="color: #dc3545;">${line}</span>\n`;
+                } else if (line.includes('✅') || type === 'success') {
+                    coloredContent += `<span style="color: #28a745;">${line}</span>\n`;
+                } else if (line.includes('🚀') || line.includes('📁') || line.includes('🎯')) {
+                    coloredContent += `<span style="color: #007bff;">${line}</span>\n`;
+                } else {
+                    coloredContent += `${line}\n`;
+                }
+            });
+            logArea.innerHTML = coloredContent;
+        }
+
+        function openExternal(url) {
+            require('electron').shell.openExternal(url);
+        }
+
+        // Handle app close
+        window.addEventListener('beforeunload', () => {
+            if (isDevelopmentRunning) {
+                ipcRenderer.invoke('stop-development');
+            }
+        });
+    </script>
+</body>
+</html>
